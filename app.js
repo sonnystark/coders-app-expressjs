@@ -59,6 +59,86 @@ async function seedDatabase() {
   console.log("Dummy data added");
 }
 
+// Dummy data seeding
+async function seedDatabase() {
+  const User = require("./models/User");
+  const Challenge = require("./models/Challenge");
+
+  await User.create({
+    username: "coder1",
+    email: "coder1@example.com",
+    password: await bcrypt.hash("password123", 10),
+    role: "coder",
+    is_verified: false,
+  });
+  await User.create({
+    username: "manager1",
+    email: "manager1@example.com",
+    password: await bcrypt.hash("password123", 10),
+    role: "manager",
+    is_verified: false,
+  });
+  await Challenge.create({
+    title: "factorial",
+    category: "Math",
+    description: "Compute the factorial.",
+    level: "Hard",
+  });
+
+  console.log("Dummy data added");
+}
+
+async function seedTestDatabase() {
+  const User = require("./models/User");
+  const Challenge = require("./models/Challenge");
+  const Submission = require("./models/Submission");
+
+  const coder = await User.create({
+    username: "testcoder",
+    email: "testcoder@example.com",
+    password: await bcrypt.hash("password123", 10),
+    role: "coder",
+    is_verified: true,
+  });
+  const manager = await User.create({
+    username: "testmanager",
+    email: "testmanager@example.com",
+    password: await bcrypt.hash("password123", 10),
+    role: "manager",
+    is_verified: true,
+  });
+
+  const challenge1 = await Challenge.create({
+    title: "test1",
+    category: "Math",
+    description: "Test challenge 1",
+    level: "Easy",
+    created_by: manager._id,
+  });
+  const challenge2 = await Challenge.create({
+    title: "test2",
+    category: "Math",
+    description: "Test challenge 2",
+    level: "Medium",
+    created_by: manager._id,
+  });
+
+  await Submission.create({
+    user_id: coder._id,
+    challenge_id: challenge1._id,
+    status: "Completed",
+    score: 100,
+  });
+  await Submission.create({
+    user_id: coder._id,
+    challenge_id: challenge2._id,
+    status: "Attempted",
+    score: 50,
+  });
+
+  console.log("Test data added");
+}
+
 // Authentication Middleware
 function authorize(roles = []) {
   return (req, res, next) => {
