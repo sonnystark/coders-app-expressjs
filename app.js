@@ -11,6 +11,13 @@ import dotenv from "dotenv";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
+import { graphqlHTTP } from "express-graphql";
+import { buildSchema } from "graphql";
+import {
+  getChallenges,
+  getChallengeById,
+  getCategories,
+} from "./services/graphqlResolvers";
 
 dotenv.config();
 const app = express();
@@ -86,6 +93,43 @@ export const transporter = nodemailer.createTransport({
     pass: process.env.EMAIL_PASS,
   },
 });
+
+// GraphQL Schema and Resolvers
+const schema = buildSchema(`
+  type Challenge {
+    _id: ID!
+    title: String!
+    category: String!
+    description: String!
+    level: String!
+    solution_rate: Float
+  }
+
+  type Category {
+    category: String!
+  }
+
+  type Query {
+    getChallenges(category: String): [Challenge]
+    getChallengeById(id: ID!): Challenge
+    getCategories: [Category]
+  }
+`);
+
+const root = {
+  getChallenges,
+  getChallengeById,
+  getCategories,
+};
+
+app.use(
+  "/graphql",
+  graphqlHTTP({
+    schema,
+    rootValue: root,
+    graphiql: true,
+  })
+);
 
 // ROUTES
 app.use("/auth", authRoutes);
