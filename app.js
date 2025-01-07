@@ -26,10 +26,10 @@ mongoose
   .catch((err) => console.error("MongoDB connection error:", err));
 
 async function seedDatabase() {
-  const User = require("./models/User");
-  const Challenge = require("./models/Challenge");
+  const User = require("./modules/user.js");
+  const Challenge = require("./modules/challenge.js");
 
-  // Add dummy users
+  // DUMMY USER
   await User.create({
     username: "coder1",
     password: "password123",
@@ -41,7 +41,7 @@ async function seedDatabase() {
     role: "manager",
   });
 
-  // Add dummy challenge
+  // DUMMY CHALLENGE
   await Challenge.create({
     title: "factorial",
     category: "Math",
